@@ -27,7 +27,7 @@ def testLoop():
             raw_response = ser.readline()                  # Read incoming line of data
             pin_state = raw_response.decode('utf-8').strip() # Clean up the bytes into text
             
-            print(f"The current state of pin D2 is: {pin_state}") 
+            print(f"The current state of pin D12 is: {pin_state}") 
             # Will print '1' if the pin is high, or '0' if it is low
             
             time.sleep(3.0)
@@ -72,7 +72,7 @@ def push_button():
         raw_response = ser.readline()                  # Read incoming line of data
         pin_state = raw_response.decode('utf-8').strip() # Clean up the bytes into text
         #
-        print(f"The current state of pin D2 is: {pin_state}") 
+        print(f"The current state of pin D12 is: {pin_state}") 
         # Will print '1' if the pin is high, or '0' if it is low
         # 1. Turn the transistor ON
         print("Setting pin to LOW...")
@@ -87,7 +87,7 @@ def push_button():
         raw_response = ser.readline()                  # Read incoming line of data
         pin_state = raw_response.decode('utf-8').strip() # Clean up the bytes into text
         #
-        print(f"The current state of pin D2 is: {pin_state}") 
+        print(f"The current state of pin D12 is: {pin_state}") 
         # Will print '1' if the pin is high, or '0' if it is low
         res.append("Successfully pushed the button!")        
     except serial.SerialException as e:

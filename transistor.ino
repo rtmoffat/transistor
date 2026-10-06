@@ -1,8 +1,8 @@
-const int transistorPin = 2; // Pin connected to the transistor
+const int transistorPin = 12; // Pin connected to the transistor
 
 void setup() {
   pinMode(transistorPin, OUTPUT);
-  digitalWrite(transistorPin, LOW); // Start with transistor OFF
+  digitalWrite(transistorPin, HIGH); // Start with transistor OFF
   Serial.begin(9600);              // Open USB serial communication
 }
 
@@ -12,10 +12,10 @@ void loop() {
     
     // Commands to control the pin
     if (command == '1') {
-      digitalWrite(transistorPin, HIGH);
+      digitalWrite(transistorPin, LOW);
     } 
     else if (command == '0') {
-      digitalWrite(transistorPin, LOW);
+      digitalWrite(transistorPin, HIGH);
     }
     // Command to READ the pin
     else if (command == 'R') {
