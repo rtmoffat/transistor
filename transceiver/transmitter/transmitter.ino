@@ -4,14 +4,15 @@
 #include <Base64.h>
 #define CE_PIN 9 
 #define CSN_PIN 10 
-#define INTERVAL_MS_TRANSMISSION 1000 
+#define INTERVAL_MS_TRANSMISSION 10000 
 #define CHANNEL 108
 RF24 radio(CE_PIN, CSN_PIN); 
 const byte address[6] = "00001"; 
 //NRF24L01 buffer limit is 32 bytes (max struct size) 
 struct payload { 
-	 String data1; 
-	 String data2; 
+	 char data1[24];
+	 //Can't do strings here
+//	 String data2; 
 }; 
 payload payload; 
 
@@ -53,8 +54,8 @@ String encrypt(char message[],char key[]) {
 
 void setup() 
 { 
-	 payload.data1 = "1234"; 
-	 payload.data2 = encrypt("My other secret e",key); 
+	 strcpy(payload.data1,"123"); 
+	 //payload.data2 = encrypt("My other secret e",key); 
 	 Serial.begin(115200); 
 	 radio.begin(); 
 	 //Set channel if desired. Otherwise, channel 76 is used. 2476Mhz
@@ -64,7 +65,7 @@ void setup()
 	 //Set the transmission datarate 
 	 radio.setDataRate(RF24_250KBPS); //(RF24_250KBPS|RF24_1MBPS|RF24_2MBPS) 
 	 //Greater level = more consumption = longer distance 
-	 radio.setPALevel(RF24_PA_MAX); //(RF24_PA_MIN|RF24_PA_LOW|RF24_PA_HIGH|RF24_PA_MAX) 
+	 radio.setPALevel(RF24_PA_LOW); //(RF24_PA_MIN|RF24_PA_LOW|RF24_PA_HIGH|RF24_PA_MAX) 
 	 //Default value is the maximum 32 bytes 
 	 radio.setPayloadSize(sizeof(payload)); 
 	 //Act as transmitter 
@@ -75,17 +76,22 @@ void loop()
 { 
 	 Serial.print("Data1:"); 
 	 Serial.println(payload.data1); 
-	 Serial.print("Data2:"); 
-	 Serial.println(payload.data2); 
+	 //Serial.print("Data2:"); 
+	 //Serial.println(payload.data2); 
 	 Serial.print("Size of payload:");
 	 Serial.println(sizeof(payload));
 	 Serial.println("Sending message");
-	 radio.write(&payload, sizeof(payload)); 
-	 Serial.println("Message sent");
+	 bool result = radio.write(&payload, sizeof(payload));
+	 Serial.print("Write completed: ");
+	 Serial.println(result ? "YES" : "NO");
+	 //radio.write(&payload, sizeof(payload)); 
+	 Serial.println("Message of ");
+	 Serial.print(sizeof(payload));
+	 Serial.print(" size sent.");
 	 Serial.print("Data1:"); 
 	 Serial.println(payload.data1); 
-	 Serial.print("Data2:"); 
-	 Serial.println(payload.data2); 
+	 //Serial.print("Data2:"); 
+	 //Serial.println(payload.data2); 
 	 Serial.println("Sent"); 
 	 delay(INTERVAL_MS_TRANSMISSION); 
 } 
