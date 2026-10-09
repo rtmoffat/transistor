@@ -4,8 +4,10 @@
 #include <Base64.h>
 #define CE_PIN 9 
 #define CSN_PIN 10 
-#define INTERVAL_MS_TRANSMISSION 10000 
+#define INTERVAL_MS_TRANSMISSION 5000
 #define CHANNEL 108
+#define BUTTON_PIN 2
+
 RF24 radio(CE_PIN, CSN_PIN); 
 const byte address[6] = "00001"; 
 //NRF24L01 buffer limit is 32 bytes (max struct size) 
@@ -17,6 +19,12 @@ struct payload {
 payload payload; 
 
 char key[]="My Secret Key";
+
+int buttonState = LOW;
+int prevButtonState = LOW;
+int lastReading = LOW;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
 
 //Decrypt
 String decrypt(char message[],char key[]) {
@@ -53,7 +61,8 @@ String encrypt(char message[],char key[]) {
 }
 
 void setup() 
-{ 
+{
+	 pinMode(BUTTON_PIN, INPUT);
 	 strcpy(payload.data1,"123"); 
 	 //payload.data2 = encrypt("My other secret e",key); 
 	 Serial.begin(115200); 
@@ -71,27 +80,31 @@ void setup()
 	 //Act as transmitter 
 	 radio.openWritingPipe(address); 
 	 radio.stopListening(); 
-} 
+}
+
 void loop() 
-{ 
-	 Serial.print("Data1:"); 
-	 Serial.println(payload.data1); 
-	 //Serial.print("Data2:"); 
-	 //Serial.println(payload.data2); 
-	 Serial.print("Size of payload:");
-	 Serial.println(sizeof(payload));
-	 Serial.println("Sending message");
-	 bool result = radio.write(&payload, sizeof(payload));
-	 Serial.print("Write completed: ");
-	 Serial.println(result ? "YES" : "NO");
-	 //radio.write(&payload, sizeof(payload)); 
-	 Serial.println("Message of ");
-	 Serial.print(sizeof(payload));
-	 Serial.print(" size sent.");
-	 Serial.print("Data1:"); 
-	 Serial.println(payload.data1); 
-	 //Serial.print("Data2:"); 
-	 //Serial.println(payload.data2); 
-	 Serial.println("Sent"); 
-	 delay(INTERVAL_MS_TRANSMISSION); 
+{
+	int reading = digitalRead(BUTTON_PIN);
+
+	if (reading != lastReading) {
+		lastDebounceTime = millis();
+	}
+
+	if (millis() - lastDebounceTime > debounceDelay) {
+		if (reading != buttonState) {
+			prevButtonState = buttonState;
+			buttonState = reading;
+			            Serial.print("Button state changed: ");
+            Serial.print(prevButtonState);
+            Serial.print(" -> ");
+            Serial.println(buttonState);
+			if (buttonState == HIGH && prevButtonState == LOW) {
+				Serial.println("Button pressed. Sending data");
+				bool result = radio.write(&payload, sizeof(payload));
+				Serial.println("Transmission result: ");
+				Serial.print(result);
+			}
+		}
+	}
+	lastReading=reading;
 } 
