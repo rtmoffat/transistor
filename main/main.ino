@@ -10,7 +10,7 @@
 #define CSN_PIN 10
 #define INTERVAL_MS_SIGNAL_LOST 3000
 #define INTERVAL_MS_SIGNAL_RETRY 250
-//#define CHANNEL 108
+#define CHANNEL 108
 
 unsigned long lastSignalMillis = 0;
 
@@ -42,7 +42,7 @@ void setupRadio() {
 
 void lostConnection() 
 { 
-	 Serial.println("We have lost connection, preventing unwanted behavior"); 
+	 //Serial.println("We have lost connection, preventing unwanted behavior"); 
 	 delay(INTERVAL_MS_SIGNAL_RETRY); 
 } 
 
@@ -102,7 +102,7 @@ void setup() {
 
 void loop() {
   readData();
-  delay(INTERVAL_MS_SIGNAL_RETRY); 
+  //delay(INTERVAL_MS_SIGNAL_RETRY); 
   //delay(5000);
   //Serial.print(toggleRelay("1",relayControlPin));
   //delay(5000);
